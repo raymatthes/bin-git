@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# work/commit on the dev branch
+dev=`git branch --no-color | grep \* | cut -d ' ' -f2-`
+
+# dev branch name has "_dev" suffix
+if [[ ${dev} != *_dev ]]; then
+    echo 'only run on a _dev branch'
+    exit -1
+fi
+
+# tracker branch tracks the remote branch
+tracker=${dev%_*}
+
+git checkout ${tracker}
+if [ $? -ne 0 ]; then
+    echo "failed to checkout tracking branch: ${tracker}"
+    exit -1
+fi
+
+git pull
+git checkout ${dev}
+git rebase -i ${tracker}

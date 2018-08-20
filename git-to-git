@@ -1,0 +1,14 @@
+#!/bin/bash
+current=`git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+
+git checkout master
+git pull
+git checkout $current
+git rebase -i master
+
+git checkout master
+git merge $current
+git push origin master
+
+git checkout $current
+

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+usage()
+{
+  echo "usage: git-tag tag-name 'tag description'"
+  exit
+}
+
+if [ -z "$1" ]
+then
+  echo "tag name is required"
+  usage
+fi
+if [ -z "$2" ]
+then
+  echo "tag description is required"
+  usage
+fi
+
+commits=`git log --oneline --no-color origin/master..HEAD`
+
+if [ -n "$commits" ]; then
+  echo "commits are not pushed yet"
+  echo $commits
+  echo "tag aborted"
+  exit -1
+fi
+
+echo "all commits are pushed, ok to tag"
+
+tag_name="$1"
+tag_desc="$2"
+
+current=`git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+
+git checkout master
+git pull
+
+git tag -a $tag_name -m "$tag_desc"
+git push origin $tag_name
+
+git checkout $current
+
+#idonethis "Cut a tag for $tag_name $tag_desc"
+

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# This script renames the current dev branch
+# and then creates a new branch called dev for doing the next
+# round of work.
+
+if [ -z "$1" ]
+then
+  echo "new branch name is required"
+  echo "usage: git-put-away new-branch-name"
+  exit
+fi
+current=`git name-rev --name-only HEAD`
+git checkout master
+git branch -m $current $1
+git checkout -b dev
+git branch
+
