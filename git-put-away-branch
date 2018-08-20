@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# This script renames the current dev branch
-# and then creates a new branch called dev for doing the next
+# This script renames the current branch
+# and then creates a new dev branch for doing the next
 # round of work.
 
 if [ -z "$1" ]
@@ -10,9 +10,25 @@ then
   echo "usage: git-put-away new-branch-name"
   exit
 fi
-current=`git name-rev --name-only HEAD`
-git checkout master
-git branch -m $current $1
-git checkout -b dev
-git branch
 
+# work/commit on the dev branch
+dev=`git branch --no-color | grep \* | cut -d ' ' -f2-`
+
+# tracker branch tracks the remote branch
+if [[ ${dev} != *_dev ]]; then
+    # default to master
+    tracker='master'
+else
+    # dev branch name has "_dev" suffix
+    tracker=${dev%_*}
+fi
+
+git checkout ${tracker}
+if [ $? -ne 0 ]; then
+    echo "failed to checkout tracking branch: ${tracker}"
+    exit -1
+fi
+
+git branch -m ${dev} $1
+git checkout -b ${dev}
+git branch

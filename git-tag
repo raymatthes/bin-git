@@ -17,7 +17,20 @@ then
   usage
 fi
 
-commits=`git log --oneline --no-color origin/master..HEAD`
+
+# work/commit on the dev branch
+dev=`git branch --no-color | grep \* | cut -d ' ' -f2-`
+
+# tracker branch tracks the remote branch
+if [[ ${dev} != *_dev ]]; then
+    # default to master
+    tracker='master'
+else
+    # dev branch name has "_dev" suffix
+    tracker=${dev%_*}
+fi
+
+commits=`git log --oneline --no-color origin/${tracker}..HEAD`
 
 if [ -n "$commits" ]; then
   echo "commits are not pushed yet"
@@ -31,15 +44,17 @@ echo "all commits are pushed, ok to tag"
 tag_name="$1"
 tag_desc="$2"
 
-current=`git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+git checkout ${tracker}
+if [ $? -ne 0 ]; then
+    echo "failed to checkout tracking branch: ${tracker}"
+    exit -1
+fi
 
-git checkout master
 git pull
 
 git tag -a $tag_name -m "$tag_desc"
 git push origin $tag_name
 
-git checkout $current
+git checkout ${dev}
 
 #idonethis "Cut a tag for $tag_name $tag_desc"
-

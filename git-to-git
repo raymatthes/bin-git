@@ -1,14 +1,29 @@
 #!/bin/bash
-current=`git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
 
-git checkout master
+# work/commit on the dev branch
+dev=`git branch --no-color | grep \* | cut -d ' ' -f2-`
+
+# tracker branch tracks the remote branch
+if [[ ${dev} != *_dev ]]; then
+    # default to master
+    tracker='master'
+else
+    # dev branch name has "_dev" suffix
+    tracker=${dev%_*}
+fi
+
+git checkout ${tracker}
+if [ $? -ne 0 ]; then
+    echo "failed to checkout tracking branch: ${tracker}"
+    exit -1
+fi
+
 git pull
-git checkout $current
-git rebase -i master
+git checkout ${dev}
+git rebase -i ${tracker}
 
-git checkout master
-git merge $current
-git push origin master
+git checkout ${tracker}
+git merge ${dev}
+git push origin ${tracker}
 
-git checkout $current
-
+git checkout ${dev}
