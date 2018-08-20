@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# make a dev branch from master
+
+tracker='master'
+
+git checkout ${tracker}
+if [ $? -ne 0 ]; then
+    echo "failed to checkout tracking branch: ${tracker}"
+    exit -1
+fi
+
+git checkout -b master_dev
+git branch
