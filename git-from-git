@@ -20,4 +20,11 @@ fi
 
 git pull
 git checkout ${dev}
-git rebase -i ${tracker}
+
+interactive='-i '
+if [ "$1" = "-auto" ]; then
+  interactive=''
+fi
+
+git rebase ${interactive}${tracker}
+

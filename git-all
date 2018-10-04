@@ -1,0 +1,10 @@
+#!/bin/bash
+
+branches=`git branch | grep '_dev$'`
+
+for branch in ${branches}; do
+	echo ${branch}
+  #git checkout ${branch}
+  #git-from-git -auto
+done
+
