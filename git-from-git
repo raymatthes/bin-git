@@ -1,5 +1,11 @@
 #!/bin/bash
 
+origin=`git branch -vv | grep -e '^\*' | grep '\[origin/'`
+if [ -n "${origin}" ]; then
+    echo "exiting because branch tracks remote: ${origin}"
+    exit -1
+fi
+
 # work/commit on the dev branch
 dev=`git branch --no-color | grep \* | cut -d ' ' -f2-`
 

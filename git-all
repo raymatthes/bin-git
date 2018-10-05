@@ -1,10 +1,13 @@
 #!/bin/bash
 
-branches=`git branch | grep '_dev$'`
+current=`git branch --no-color | grep \* | cut -d ' ' -f2-`
+
+branches=`git branch --list '*_dev' | cut -c 3-`
 
 for branch in ${branches}; do
-	echo ${branch}
-  #git checkout ${branch}
-  #git-from-git -auto
+  git checkout ${branch}
+  git-from-git -auto
 done
+
+git checkout ${current}
 
